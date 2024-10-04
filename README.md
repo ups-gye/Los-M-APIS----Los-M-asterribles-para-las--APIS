@@ -30,7 +30,7 @@ Equipo para el modulo de Diseño de API's
 
 ## Imagen del Proyecto
 
-![Logo del equipo de desarrollo](https://example.com/logo.png)
+![Logo del equipo de desarrollo](https://github.com/ups-gye/Los-M-APIS----Los-M-asterribles-para-las--APIS/blob/main/logo.jpg)
 
 > Imagen representativa del equipo de desarrollo, simbolizando integración y conexión a través de APIs.
 
