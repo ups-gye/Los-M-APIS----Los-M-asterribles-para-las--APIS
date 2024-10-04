@@ -10,6 +10,7 @@ Equipo para el modulo de Diseño de API's
 - Paulo Vivar
 - Jonnathan Simbaña
 - Giovanny Jacome
+- Juan Flores
 ## Logo del equipo de desarrollo
 
 ![Logo del equipo de desarrollo](https://github.com/ups-gye/Los-M-APIS----Los-M-asterribles-para-las--APIS/blob/main/logo.jpg)
