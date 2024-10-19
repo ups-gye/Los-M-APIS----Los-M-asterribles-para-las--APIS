@@ -8,8 +8,6 @@ interface UserCredentials {
 
 // Definir la interfaz para la respuesta del servidor (ajustada según respuesta de API /login)
 interface LoginResponse {
-  //message: string
-  //token: string
   id: number
   userName: string
   userPassword: string
@@ -17,28 +15,13 @@ interface LoginResponse {
 
 type AxiosLoginResponse = AxiosResponse<LoginResponse>
 
-// const loginUser = async ({ userName, userPassword }) => {
-//   try {
-//     return await axios.post(`${import.meta.env.VITE_API_BASE_URL}/login`, {
-//       userName,
-//       userPassword,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     throw error;
-//   }
-// };
-
-//viene de useAuth
-//mod email
-
 const loginUser = async ({
   userName,
   userPassword
 }: UserCredentials): Promise<AxiosLoginResponse> => {
   try {
     const response: AxiosResponse<LoginResponse> = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}/login`,
+      `${import.meta.env.VITE_API_BASE_URL}/user/login`,
       {
         userName,
         userPassword
