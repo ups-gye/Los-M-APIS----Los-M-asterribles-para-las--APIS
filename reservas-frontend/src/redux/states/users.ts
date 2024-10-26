@@ -7,6 +7,7 @@ interface UsersState {
   visibleForm: boolean;
   errors: string | null;
   isLoading: boolean;
+  hasLoaded: boolean;
 }
 
 const initialState: UsersState = {
@@ -15,6 +16,7 @@ const initialState: UsersState = {
   visibleForm: false,
   errors: null,
   isLoading: true,
+  hasLoaded: false
 };
 
 export const usersSlice = createSlice({
@@ -24,6 +26,7 @@ export const usersSlice = createSlice({
     loadingUsers: (state, action: PayloadAction<User[]>) => {
       state.users = action.payload;
       state.isLoading = false;
+      state.hasLoaded = true;
     },
     addUser: (state, action: PayloadAction<User>) => {
       state.users.push(action.payload);

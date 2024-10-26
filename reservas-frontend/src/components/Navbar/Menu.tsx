@@ -7,12 +7,9 @@ import {
   ShoppingCart, 
   // Users
 } from 'lucide-react';
-import { useAuth } from '@/sections/shared/hooks'
-
 
 // export const MenuList = () => {
 export const MenuList: React.FC = () => {
-  const { user } = useAuth();
 
   const commonClasses = 'flex items-center gap-3 rounded-lg px-3 py-2'
 
@@ -64,24 +61,19 @@ export const MenuList: React.FC = () => {
             <BarChart className="h-4 w-4" />
             Usuarios{' '}
           </NavLink>
-
-          {user && (
-            <>
-              <NavLink
-                to="/users/selectRegister"
-                className={({ isActive }) =>
-                  `${commonClasses} ${
-                    isActive
-                      ? 'bg-muted text-primary transition-all hover:text-primary'
-                      : 'text-muted-foreground transition-all hover:text-primary'
-                  }`
-                }
-              >
-                <BarChart className="h-4 w-4" />
-                Registar Usuarios{' '}
-              </NavLink>
-            </>
-          )}
+          <NavLink
+            to="/clients"
+            className={({ isActive }) =>
+              `${commonClasses} ${
+                isActive
+                  ? 'bg-muted text-primary transition-all hover:text-primary'
+                  : 'text-muted-foreground transition-all hover:text-primary'
+              }`
+            }
+          >
+            <BarChart className="h-4 w-4" />
+            Clientes{' '}
+          </NavLink>
         </nav>
       </div>
     </>

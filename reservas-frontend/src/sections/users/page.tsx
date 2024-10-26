@@ -1,5 +1,5 @@
 // src/pages/Users/page.tsx
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 // import { useUsers, useAuth } from '@/sections/shared/hooks'
 import { useUsers } from '@/sections/shared/hooks'
@@ -24,9 +24,26 @@ export function UsersPage() {
 
   // const { user } = useAuth()
 
+  // useEffect(() => {
+  //   fetchUsers()
+  // }, [ page])
+
+  // evitar recreaciones
+  const memoizedFetchUsers = useCallback(fetchUsers, [fetchUsers])
+
+  // solo se ejecuta una vez al montar el componente y cuando cambia la página
   useEffect(() => {
-    fetchUsers()
-  }, [fetchUsers, page])
+    let isSubscribed = true;
+    const loadUsers = async () => {
+      if (isSubscribed) {
+        await memoizedFetchUsers();
+      }
+    };
+    loadUsers();
+    return () => {
+      isSubscribed = false;
+    };
+  }, [memoizedFetchUsers, page]);
 
   if (isLoading) {
     return (
