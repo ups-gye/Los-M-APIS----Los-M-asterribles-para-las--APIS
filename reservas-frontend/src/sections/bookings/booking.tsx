@@ -28,22 +28,10 @@ import { z } from 'zod'
 
 
 import * as Forms from '@radix-ui/react-form';
-import { Calendar } from 'lucide-react'
+import { Calendar, Space } from 'lucide-react'
 import { useState } from 'react'
+import { gql, useLazyQuery, useQuery } from '@apollo/client'
 
-
-
-const userSchema = z.object({
-  userName: z.string().min(1, "El nombre de usuario es requerido"),
-});
-
-interface Props {
-  userSelected: User | null
-  onCloseForm: () => void
-}
-
-
-type UserFormData = z.infer<typeof userSchema>;
 
 interface FlightReservationData {
   cedula: string;
@@ -55,23 +43,65 @@ interface FlightReservationData {
   clase: 'premium' | 'business' | 'basic';
 }
 
-export function BookingPage({ userSelected, onCloseForm }: Props) {
-/*   const { page } = useParams() */
-
-
-
-/*   type FormReservation = {
-    userName: string,
+const OBTENER_RESERVAS = gql`
+  query ObtenerReservas {
+    obtenerReservas {
+      id
+      codigoVuelo
+      fecha
+      cedula
+      estadoReserva
+      clase
+    }
   }
+`;
+
+export function BookingPage() {
+
+/*   const { loading, error, data } = useQuery(OBTENER_RESERVAS);
+  if (loading) return <p>Cargando...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+console.log("esta es la info", data?.obtenerReservas) */
+
+const [reservas, setReservas] = useState<any[]>([]);
+const [getReservas, { loading, error} ] = useLazyQuery(OBTENER_RESERVAS, {
+  onCompleted: (data) => {
+    if (loading) return <p>Cargando...</p>;
+    if (error) return <p>Error: {error.message}</p>;
+    setReservas(data.obtenerReservas); // Actualiza el estado con los datos obtenidos
+    console.log(data.obtenerReservas); // Muestra las reservas en la consola
+    console.log("estas son las reservas", reservas)
+
+      setFormData(prevData => ({
+        ...prevData,
+        nombre: 'Luis',
+        cedula: cedula,
+      }));
+
+  },
+});
+
+const handleFetchReservas = (e: React.FormEvent) => {
+  e.preventDefault();
+  getReservas(); // Llama a la consulta cuando se hace clic en el botón
+};
+
+/*   useEffect(( )=>{
+    fetch('http://localhost:4000/graphql', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ mutation:
+        guardarReserva(codigoVuelo: "FL449", fecha: "2025-12-26", cedula: "0105630388", estadoReserva: "ACT", clase:"ECONÓMICA" ) 
+      })
+    })
+  }) */
+
+/*   const { loading, error, data } = useQuery(OBTENER_RESERVAS);
+if (loading) return <p>Cargando...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+console.log(data)
  */
-  const form = useForm<UserFormData>({
-    resolver: zodResolver(userSchema),
-    defaultValues: userSelected ? {
-      userName: userSelected.userName, // Cargar el nombre del usuario si existe
-    } : {
-      userName: '', // Valor predeterminado si no hay usuario seleccionado
-    },
-  });
+
 
   const [formData, setFormData] = useState<FlightReservationData>({
     cedula: '',
@@ -82,32 +112,51 @@ export function BookingPage({ userSelected, onCloseForm }: Props) {
     fecha: '',
     clase: 'basic'
   });
+  const [cedula, setCedula] = useState<string>('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form data:', formData);
   };
+  
+ /*  const validateClient = (e: React.FormEvent) => {
+
+    e.preventDefault();
+    setFormData(prevData => ({
+      ...prevData,
+      nombre: 'Luis',
+      cedula: '0101010',
+    }));
+
+  }; */
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   return (
     <Layout>
-      <div className="flex items-center">
+     {/*  <div className="flex items-center">
         <h1 className="text-lg font-semibold md:text-2xl">Reservas</h1>
       </div>
-      <div className="w-full h-full flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm p-2">
+      <div className="w-full max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
         <div className="flex flex-col items-center gap-1">
           <div className="w-full h-full p-2 m-2 flex flex-row justify-center gap-4">
             
-          <Card className="w-[400px] p-6">
+          <Card className="w-[400px] p-6 border-0">
             <Form {...form}>
-              <form /* onSubmit={form.handleSubmit(onsubmit)} */ className="space-y-6">
+              <form onSubmit={validateClient} className="space-y-6">
                 <FormField
                     control={form.control}
                     name="userName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel>Cédula</FormLabel>
                         <FormControl>
-                          <Input placeholder="Ingrese su username" {...field} />
+                          <Input placeholder="Ingrese su cédula" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -116,52 +165,86 @@ export function BookingPage({ userSelected, onCloseForm }: Props) {
               </form>
             </Form> 
             <div className="text-left">
-                <Button className="mb-2" >
-                  Agregar Usuario
+                <Button className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200" style={{ marginTop: 20}}>
+                  Buscar Usuario
                 </Button>
             </div>
           </Card>
           </div>
         </div>
+      </div> */}
+      <div className="w-full max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <h1 className="text-2xl font-bold mb-6 text-blue-800">Consultar Usuarios</h1>
+        {/* <Card className="w-[400px] p-6"></Card> */}
+        <Forms.Root className="space-y-4" onSubmit={handleFetchReservas}>
+          {/* Cédula */}
+          <Forms.Field name="cedula" className="flex flex-col">
+            <Forms.Label className="text-m font-medium mb-2">Cédula</Forms.Label>
+            <Forms.Control asChild>
+              <input 
+                type="text"
+                className="border rounded-md p-3"
+                placeholder="Ingrese su cédula"
+                name="cedula"
+                value={cedula}
+                id="cedula"
+                onChange={(e) => setCedula( e.target.value)}
+              />
+            </Forms.Control>
+          </Forms.Field>
+
+        {/* Submit Button */}
+        <Forms.Submit asChild>
+          <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200">
+          Buscar Usuario
+          </button>
+        </Forms.Submit>
+        </Forms.Root>
       </div>
 
       <div className="w-full max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold mb-6 text-blue-800">Reserva de Vuelo</h1>
+        {/* <Card className="w-[400px] p-6"></Card> */}
         <Forms.Root className="space-y-4" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-9">
           {/* Cédula */}
           <Forms.Field name="cedula" className="flex flex-col">
-            <Forms.Label className="text-sm font-medium mb-1">Cédula</Forms.Label>
+            <Forms.Label className="text-m font-medium mb-2">Cédula</Forms.Label>
             <Forms.Control asChild>
               <input 
                 type="text"
-                className="border rounded-md p-2"
+                className="border rounded-md p-3"
+                name="cedula"
                 value={formData.cedula}
-                readOnly
+                /* onChange={(e) => setFormData({...formData, cedula: e.target.value})} */
+                onChange={handleChange}
               />
             </Forms.Control>
           </Forms.Field>
 
           {/* Nombre */}
           <Forms.Field name="nombre" className="flex flex-col">
-            <Forms.Label className="text-sm font-medium mb-1">Nombre</Forms.Label>
+            <Forms.Label className="text-m font-medium mb-1">Nombre</Forms.Label>
             <Forms.Control asChild>
               <input 
                 type="text"
-                className="border rounded-md p-2 bg-gray-100"
-                value="xxx xxxx"
+                className="border rounded-md p-3 bg-gray-100"
+                value={formData.nombre}
+                onChange={handleChange}
                 readOnly
+                /* onChange={(e) => setFormData({...formData, nombre: e.target.value})} */
+                /* onChange={validateClient} */
               />
             </Forms.Control>
           </Forms.Field>
 
           {/* Origen */}
           <Forms.Field name="origen" className="flex flex-col">
-            <Forms.Label className="text-sm font-medium mb-1">Origen</Forms.Label>
+            <Forms.Label className="text-m font-medium mb-1">Origen</Forms.Label>
             <Forms.Control asChild>
               <input 
                 type="text"
-                className="border rounded-md p-2"
+                className="border rounded-md p-3"
                 value="bucar"
                 readOnly
               />
