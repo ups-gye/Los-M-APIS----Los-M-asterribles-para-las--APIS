@@ -82,11 +82,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>App.config</DependentUpon>
     </Compile>
-    <Compile Include="Connected Services\ServiceBizagiBpm\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
     <Compile Include="DataContract\VueloData.cs" />
     <Compile Include="Mapper\VueloMapper.cs" />
     <Compile Include="Service\VueloService.cs" />
@@ -97,7 +92,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>App.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Connected Services\ServiceBizagiBpm\WorkflowEngineSOA.wsdl" />
     <None Include="packages.config" />
     <None Include="Properties\DataSources\System.Xml.XmlNode.datasource" />
   </ItemGroup>
@@ -109,21 +103,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Connected Services\ServiceBizagiBpm\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Connected Services\ServiceBizagiBpm\configuration91.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Connected Services\ServiceBizagiBpm\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Connected Services\ServiceBizagiBpm\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
