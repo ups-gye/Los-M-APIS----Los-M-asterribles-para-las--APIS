@@ -1,0 +1,87 @@
+version: "3.3"
+
+services:
+ #############################
+ #DATABASES
+ 
+ #############################
+  #Login - 192.168.26.22
+ postgres_login:
+  image: "postgres:14"
+  container_name: "postgres_login"
+  environment:    
+   - POSTGRES_PASSWORD=gioniel2606
+   - ALLOW_EMPTY_PASSWORD=no      
+  restart: always
+  ports:
+   - '5433:5432'
+  networks:
+    app_network:
+      ipv4_address: 192.168.26.22
+  volumes:
+   - '/opt/application/postgresql_login/data:/var/lib/postgresql/data' 
+ 
+ #############################
+ #Login - 192.168.26.02
+ sqlserver_vuelo:
+   image: mcr.microsoft.com/mssql/server:2019-CU3-ubuntu-18.04
+   container_name: sqlserver_vuelo
+   command: /bin/bash /opt/entrypoint.sh        
+   env_file:
+    - sqlserver.env
+    - sapassword.env
+   ports:
+    - '1433:1433'
+    volumes:
+    - sql-server-data:/var/opt/mssql/
+    - sqldata:/var/opt/sqlserver/data
+    - sqllog:/var/opt/sqlserver/log
+    - sqlbackup:/var/opt/sqlserver/backup
+    - /c/docker/shared:/usr/shared
+    - ./entrypoint.sh:/opt/entrypoint.sh
+    - ./db-init.sh:/opt/db-init.sh
+    - ./vuelo-db-init.sql:/opt/vuelo-db-init.sql 
+  networks:
+    app_network:
+      ipv4_address: 192.168.26.2
+  volumes:
+   - '/opt/application/postgresql_login/data:/var/lib/postgresql/data' 
+ 
+ #############################
+ #BACKEND SERVICES
+ #Login - 192.168.26.23
+ backend-login:
+  depends_on:
+   - postgres_login
+  image: "backend-login" 
+  container_name: "backend-login"
+  build: ./ 
+  environment:
+   - DB_HOST=192.168.26.22
+  restart: always
+  ports:
+   - '8081:8081'  
+  networks:
+    app_network:
+      ipv4_address: 192.168.26.23
+  volumes:
+   - '/opt/application/login:/var/lib/kotlin'
+
+volumes:
+  sql-server-data:
+    driver: local
+  sqldata:
+  sqllog:
+  sqlbackup:
+
+networks:
+ app_network:
+  driver: bridge 
+  driver_opts: 
+   com.docker.network.enable_ipv6: 'false'
+
+  ipam: 
+   driver: default
+   config:
+    - subnet: 192.168.26.0/24 
+      gateway: 192.168.26.1

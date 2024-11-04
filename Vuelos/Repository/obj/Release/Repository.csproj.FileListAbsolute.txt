@@ -1,0 +1,15 @@
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\bin\Release\Repository.dll.config
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\bin\Release\Repository.dll
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\bin\Release\Repository.pdb
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\bin\Release\Common.Logging.dll
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\bin\Release\EntityFramework.dll
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\bin\Release\EntityFramework.SqlServer.dll
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\bin\Release\Newtonsoft.Json.dll
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\bin\Release\EntityFramework.xml
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\bin\Release\EntityFramework.SqlServer.xml
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\bin\Release\Newtonsoft.Json.xml
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\obj\Release\Repository.csproj.AssemblyReference.cache
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\obj\Release\Repository.csproj.CoreCompileInputs.cache
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\obj\Release\Repository.csproj.Up2Date
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\obj\Release\Repository.dll
+C:\modulo5\Los-M-APIS----Los-M-asterribles-para-las--APIS\Vuelos\Repository\obj\Release\Repository.pdb

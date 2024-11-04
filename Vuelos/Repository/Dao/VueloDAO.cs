@@ -71,11 +71,12 @@ namespace Repository.Dao
             }            
         }
 
-        public Vuelo ObtenerVueloOrigenDestino(string Origen, string Destino) 
+        public Vuelo ObtenerVueloOrigenDestino(string Origen, string Destino)
         {
             try
             {
-                Vuelo vuelo = db.Vuelo.Where(e => e.Origen == Origen && e.Destino == Destino).First();
+                List<Vuelo> vuelos = db.Vuelo.Where(e => e.Origen == Origen && e.Destino == Destino).ToList();
+                Vuelo vuelo = (vuelos.Count > 0) ? vuelos[0] : null;
                 return vuelo;
             }
             catch (DbEntityValidationException ex)

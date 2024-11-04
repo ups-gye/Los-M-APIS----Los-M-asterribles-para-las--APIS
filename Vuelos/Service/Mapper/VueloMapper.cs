@@ -27,7 +27,9 @@ namespace Service.Mapper
 
         public static VueloData GetDataFromEntity(Vuelo vuelo)
         {
-            VueloData vueloData = new VueloData
+            if (vuelo == null) return null;
+
+            return new VueloData
             {
                 Codigo = vuelo.Codigo,
                 Origen = vuelo.Origen,
@@ -35,8 +37,6 @@ namespace Service.Mapper
                 NumerpPasajero = vuelo.NumerpPasajero,
                 Estado = vuelo.Estado
             };
-
-            return vueloData;
         }
     }
 }
