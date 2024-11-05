@@ -185,10 +185,10 @@
   </wsdl:binding>
   <wsdl:service name="VueloSoap">
     <wsdl:port name="VueloSoapSoap" binding="tns:VueloSoapSoap">
-      <soap:address location="http://localhost:62681/VueloSoap.asmx" />
+      <soap:address location="https://pdim.edg-ec.com/Vuelos/VueloSoap.asmx" />
     </wsdl:port>
     <wsdl:port name="VueloSoapSoap12" binding="tns:VueloSoapSoap12">
-      <soap12:address location="http://localhost:62681/VueloSoap.asmx" />
+      <soap12:address location="https://pdim.edg-ec.com/Vuelos/VueloSoap.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

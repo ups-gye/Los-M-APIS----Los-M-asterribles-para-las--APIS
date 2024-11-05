@@ -2,7 +2,7 @@ const soap = require('soap');
 
 const getVuelo = async (origen, destino) => {
     try {
-        const url = 'http://localhost:62681/VueloSoap.asmx';
+        const url = 'https://pdim.edg-ec.com/Vuelos/VueloSoap.asmx';
         const client = await soap.createClientAsync(url);
         const [result] = await client.ObtenerVueloOrigenDestino({ origen, destino });
         const { codigo, origen, destino, numeroAsientosTotales } = result;

@@ -21,7 +21,7 @@ services:
   volumes:
    - '/opt/application/postgresql_login/data:/var/lib/postgresql/data' 
  #############################
- #Cliente - 192.168.26.23
+ #Cliente - 192.168.26.12
  postgres_cliente:
   image: "postgres:14"
   container_name: "postgres_cliente"
@@ -36,6 +36,24 @@ services:
       ipv4_address: 192.168.26.12
   volumes:
    - '/opt/application/postgresql_cliente/data:/var/lib/postgresql/data' 
+ 
+ #############################
+ #Reservas - 192.168.26.42
+ mongo_reservas:  
+  image: mongo:latest
+  container_name: mongo_reservas
+  environment:
+  MONGO_INITDB_ROOT_USERNAME: admin
+    MONGO_INITDB_ROOT_PASSWORD: password
+    MONGO_INITDB_DATABASE: flight-reservations
+  ports:
+    - '27017:27017'
+  volumes:
+    - mongo-data:/data/db
+  networks:
+    app_network:
+      ipv4_address: 192.168.26.42
+
   
  #############################
  #BACKEND SERVICES
@@ -59,7 +77,7 @@ services:
   volumes:
    - '/opt/application/login:/var/lib/kotlin'
 #############################     
- #Vuelos - 192.168.26.3
+#Vuelos - 192.168.26.13
  backend-cliente:
   depends_on:
    - postgres_cliente
@@ -72,14 +90,30 @@ services:
   networks:
     app_network:
       ipv4_address: 192.168.26.13  
+#############################     
+#Vuelos - 192.168.26.43
+ backend-reserva:
+  depends_on:
+   - mongo_reservas
+  image: "backend-reserva" 
+  container_name: "backend-reserva"
+  build: ./   
+  restart: always
+  ports:
+   - '4000:4000'  
+  networks:
+    app_network:
+      ipv4_address: 192.168.26.43  
 
+volumes:
+ mongo-data:
+  driver: local
 
 networks:
  app_network:
   driver: bridge 
   driver_opts: 
    com.docker.network.enable_ipv6: 'false'
-
   ipam: 
    driver: default
    config:
