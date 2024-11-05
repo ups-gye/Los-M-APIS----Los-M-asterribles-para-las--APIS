@@ -31,7 +31,9 @@ import * as Forms from '@radix-ui/react-form';
 import { Calendar, Space } from 'lucide-react'
 import { useState } from 'react'
 import { gql, useLazyQuery, useQuery } from '@apollo/client'
-
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as Tooltip from '@radix-ui/react-tooltip';
 
 interface FlightReservationData {
   cedula: string;
@@ -136,6 +138,17 @@ console.log(data)
       [name]: value,
     }));
   };
+  const handleEdit = (obj: FlightReservationData) => {
+    // Lógica para editar la reserva
+    console.log('Editar reserva con ID:', obj);
+    console.log('ID:', obj.id);
+
+  };
+
+  const handleDelete = (id: number) => {
+    setReservas(reservas.filter(reserva => reserva.id !== id));
+    console.log('Eliminar reserva con ID:', id);
+  };
 
   return (
     <Layout>
@@ -173,6 +186,104 @@ console.log(data)
           </div>
         </div>
       </div> */}
+       <style>
+        {`
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1em;
+            text-align: left;
+          }
+
+          th, td {
+            padding: 12px 15px;
+            border: 1px solid #dddddd;
+          }
+
+          th {
+            background-color: #f2f2f2;
+          }
+
+          tr:nth-child(even) {
+            background-color: #f9f9f9;
+          }
+
+          button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+          }
+
+          button:hover {
+            background-color: #0056b3;
+          }
+
+          button:focus {
+            outline: none;
+          }
+        `}
+      </style>
+      <div className="w-full  mx-auto p-6 bg-white rounded-lg shadow-lg" >
+        <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Código de Vuelo</th>
+            <th>Fecha</th>
+            <th>Cédula</th>
+            <th>Estado de Reserva</th>
+            <th>Clase</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {reservas.map((reserva) => (
+            <tr key={reserva.id}>
+              <td>{reserva.id}</td>
+              <td>{reserva.codigoVuelo}</td>
+              <td>{reserva.fecha}</td>
+              <td>{reserva.cedula}</td>
+              <td>{reserva.estadoReserva}</td>
+              <td>{reserva.clase}</td>
+              <td>
+                <button 
+                  style={{
+                    borderRadius: '12px', 
+                    padding: '10px 15px', 
+                    border: 'none', 
+                    backgroundColor: '#007BFF', 
+                    color: '#fff', 
+                    cursor: 'pointer', 
+                    alignItems: 'center', 
+                  }}
+                  title="Editar reserva"
+                  onClick={() => handleEdit(reserva)}><FontAwesomeIcon icon={faEdit} /></button>
+                <button 
+                  style={{
+                    borderRadius: '12px', 
+                    padding: '10px 15px', 
+                    border: 'none', 
+                    backgroundColor: '#007BFF', 
+                    color: '#fff', 
+                    cursor: 'pointer', 
+                    alignItems: 'center', 
+                  }}
+                   title="Eliminar reserva"
+                  onClick={() => handleDelete(reserva.id)}
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+        </table>
+      </div>
       <div className="w-full max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold mb-6 text-blue-800">Consultar Usuarios</h1>
         {/* <Card className="w-[400px] p-6"></Card> */}
