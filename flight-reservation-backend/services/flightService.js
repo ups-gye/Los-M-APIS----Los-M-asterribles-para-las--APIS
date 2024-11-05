@@ -7,34 +7,6 @@ const { v4: uuidv4 } = require('uuid');
 const moment = require('moment-timezone');
 const SOAP_SERVICE_URL = 'https://pdim.edg-ec.com/Vuelos/VueloSoap.asmx?wsdl'
 
-
-const prepareInputXML = async (vin, logger) => {
-    let messageId = uuidv4();
-    let creationDate = moment.utc().tz("America/Chicago").format();
-    let xml = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:dev="http://www.atxg.com/schemas/t3/ts/devicemgmtsvc" xmlns:mes="http://www.atxg.com/schemas/t3/messaging" xmlns:add="http://schemas.xmlsoap.org/ws/2004/08/addressing"><soapenv:Header/><soapenv:Body><ns3:get-basic-device-info-request-message type="ns3:DeviceMgmtSvc" xmlns="http://www.atxg.com/schemas/t3/messaging" xmlns:ns6="http://www.atxg.com/schemas/t3/telephony" xmlns:ns5="http://www.atxg.com/schemas/t3/services" xmlns:ns7="http://www.atxg.com/schemas/t3/accounting" xmlns:ns2="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:ns4="http://www.atxg.com/schemas/t3/common" xmlns:ns3="http://www.atxg.com/schemas/t3/ts/devicemgmtsvc"><message-header><msg-info><service>DeviceMgmtSvc</service><action>GetBasicDeviceInfo</action><session-id>fc650997-457d-4617-a8d2-7992b545e762</session-id><msg-id>${messageId}</msg-id><time-of-creation>${creationDate}</time-of-creation></msg-info><conv-info><to>DeviceMgmtSvc</to><from><ns2:Address>TS</ns2:Address></from><source-system>T3_TS_TS</source-system><require-notification>false</require-notification><message-delivery-method>WEB_SERVICE</message-delivery-method></conv-info></message-header><ns3:get-basic-device-info-request-criteria-message-body><ns3:criteria><ns4:key>VIN</ns4:key><ns4:relation>EQUAL</ns4:relation><ns4:value>${vin}</ns4:value></ns3:criteria></ns3:get-basic-device-info-request-criteria-message-body></ns3:get-basic-device-info-request-message></soapenv:Body></soapenv:Envelope>`;
-    await logger.info("xml: " + xml);
-    return xml;
-};
-
-const getBasicDeviceInfoSoap = async (vin, logger) => {
-    let xmls = await prepareInputXML(vin, logger);
-    let basicDeviceInfoResponse;
-    try {
-        const res = await axios.post(SOAP_SERVICE_URL, xmls, {
-            headers: { 'Content-Type': 'text/xml' },
-            httpsAgent: new https.Agent({ rejectUnauthorized: false })
-        });
-        basicDeviceInfoResponse = res.data;
-        await logger.info("basicDeviceInfoResponse: " + basicDeviceInfoResponse);
-    } catch (error) {
-        await logger.error(new Error("Error while getting deviceInfo" + error.stack));
-        await logger.info("Setting response empty...");
-        basicDeviceInfoResponse = "";
-    }
-    await logger.info("basicDeviceInfoResponse after soap call: " + JSON.stringify(basicDeviceInfoResponse));
-    return { key: 'serviceDetailsFromT3', value: basicDeviceInfoResponse };
-};
-
 const getVuelo = async (origen, destino) => {
     try {
         const url = 'https://pdim.edg-ec.com/Vuelos/VueloSoap.asmx';
@@ -84,22 +56,4 @@ const getVuelo = async (origen, destino) => {
     }
 };
 
-const removeHyphens = (name) =>{
-    return name.replace(/-/g, '');
-}
-const parseXmlResponse = async(serviceDetailsFromT3,logger)=>{
-    return await new Promise((resolve, reject) => {
-        parseString(serviceDetailsFromT3, {tagNameProcessors: [stripNS, removeHyphens], explicitArray:false}, function (error, result) {
-            console.dir(result);
-            if (error) {
-                reject(error);
-            }
-            else {
-                resolve(result);
-            }
-        });
-    });
-
-};
-
-module.exports = { getVuelo, getBasicDeviceInfoSoap };
+module.exports = { getVuelo };
