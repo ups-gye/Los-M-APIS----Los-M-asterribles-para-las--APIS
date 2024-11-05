@@ -43,7 +43,7 @@ services:
   image: mongo:latest
   container_name: mongo_reservas
   environment:
-  MONGO_INITDB_ROOT_USERNAME: admin
+    MONGO_INITDB_ROOT_USERNAME: admin
     MONGO_INITDB_ROOT_PASSWORD: password
     MONGO_INITDB_DATABASE: flight-reservations
   ports:
