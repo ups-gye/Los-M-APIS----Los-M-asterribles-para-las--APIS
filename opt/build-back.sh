@@ -4,7 +4,7 @@
 #Remove backend and temp images
 docker rmi -f $(docker images --filter='dangling=true' -a -q)
 docker rmi -f $(docker images 'backend-login' -a -q)
-docker rmi -f $(docker images 'backend-vuelo' -a -q)
+docker rmi -f $(docker images 'backend-cliente' -a -q)
 
 #==========================================================
 #Clone git repository
