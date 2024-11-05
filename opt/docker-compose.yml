@@ -1,0 +1,87 @@
+version: "3.3"
+
+services:
+ #############################
+ #DATABASES
+ 
+ #############################
+  #Login - 192.168.26.22
+ postgres_login:
+  image: "postgres:14"
+  container_name: "postgres_login"
+  environment:    
+   - POSTGRES_PASSWORD=gioniel2606
+   - ALLOW_EMPTY_PASSWORD=no      
+  restart: always
+  ports:
+   - '5433:5432'
+  networks:
+    app_network:
+      ipv4_address: 192.168.26.22
+  volumes:
+   - '/opt/application/postgresql_login/data:/var/lib/postgresql/data' 
+ #############################
+ #Cliente - 192.168.26.23
+ postgres_cliente:
+  image: "postgres:14"
+  container_name: "postgres_cliente"
+  environment:    
+   - POSTGRES_PASSWORD=gioniel2606
+   - ALLOW_EMPTY_PASSWORD=no      
+  restart: always
+  ports:
+   - '5432:5432'
+  networks:
+    app_network:
+      ipv4_address: 192.168.26.12
+  volumes:
+   - '/opt/application/postgresql_cliente/data:/var/lib/postgresql/data' 
+  
+ #############################
+ #BACKEND SERVICES
+ 
+ #############################
+ #Login - 192.168.26.23
+ backend-login:
+  depends_on:
+   - postgres_login
+  image: "backend-login" 
+  container_name: "backend-login"
+  build: ./ 
+  environment:
+   - DB_HOST=192.168.26.22
+  restart: always
+  ports:
+   - '8081:8081'  
+  networks:
+    app_network:
+      ipv4_address: 192.168.26.23
+  volumes:
+   - '/opt/application/login:/var/lib/kotlin'
+#############################     
+ #Vuelos - 192.168.26.3
+ backend-cliente:
+  depends_on:
+   - postgres_cliente
+  image: "backend-cliente" 
+  container_name: "backend-cliente"
+  build: ./   
+  restart: always
+  ports:
+   - '8080:8080'  
+  networks:
+    app_network:
+      ipv4_address: 192.168.26.13  
+
+
+networks:
+ app_network:
+  driver: bridge 
+  driver_opts: 
+   com.docker.network.enable_ipv6: 'false'
+
+  ipam: 
+   driver: default
+   config:
+    - subnet: 192.168.26.0/24 
+      gateway: 192.168.26.1
