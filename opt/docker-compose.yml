@@ -20,35 +20,27 @@ services:
       ipv4_address: 192.168.26.22
   volumes:
    - '/opt/application/postgresql_login/data:/var/lib/postgresql/data' 
- 
  #############################
- #Login - 192.168.26.02
- sqlserver_vuelo:
-   image: mcr.microsoft.com/mssql/server:2019-CU3-ubuntu-18.04
-   container_name: sqlserver_vuelo
-   command: /bin/bash /opt/entrypoint.sh        
-   env_file:
-    - sqlserver.env
-    - sapassword.env
-   ports:
-    - '1433:1433'
-    volumes:
-    - sql-server-data:/var/opt/mssql/
-    - sqldata:/var/opt/sqlserver/data
-    - sqllog:/var/opt/sqlserver/log
-    - sqlbackup:/var/opt/sqlserver/backup
-    - /c/docker/shared:/usr/shared
-    - ./entrypoint.sh:/opt/entrypoint.sh
-    - ./db-init.sh:/opt/db-init.sh
-    - ./vuelo-db-init.sql:/opt/vuelo-db-init.sql 
+ #Cliente - 192.168.26.23
+ postgres_cliente:
+  image: "postgres:14"
+  container_name: "postgres_cliente"
+  environment:    
+   - POSTGRES_PASSWORD=gioniel2606
+   - ALLOW_EMPTY_PASSWORD=no      
+  restart: always
+  ports:
+   - '5432:5432'
   networks:
     app_network:
-      ipv4_address: 192.168.26.2
+      ipv4_address: 192.168.26.12
   volumes:
-   - '/opt/application/postgresql_login/data:/var/lib/postgresql/data' 
- 
+   - '/opt/application/postgresql_cliente/data:/var/lib/postgresql/data' 
+  
  #############################
  #BACKEND SERVICES
+ 
+ #############################
  #Login - 192.168.26.23
  backend-login:
   depends_on:
@@ -66,13 +58,21 @@ services:
       ipv4_address: 192.168.26.23
   volumes:
    - '/opt/application/login:/var/lib/kotlin'
+#############################     
+ #Vuelos - 192.168.26.3
+ backend-cliente:
+  depends_on:
+   - postgres_cliente
+  image: "backend-cliente" 
+  container_name: "backend-cliente"
+  build: ./   
+  restart: always
+  ports:
+   - '8080:8080'  
+  networks:
+    app_network:
+      ipv4_address: 192.168.26.13  
 
-volumes:
-  sql-server-data:
-    driver: local
-  sqldata:
-  sqllog:
-  sqlbackup:
 
 networks:
  app_network:

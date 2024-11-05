@@ -18,6 +18,6 @@ cd /opt/
 ./build-back.sh
 
 #Start services
-docker-compose up -d 
+docker compose up -d 
 #sudo systemctl start nginx
 echo Start services... done!
