@@ -1,39 +1,9 @@
-// src/pages/Users/page.tsx
-/* import { useCallback, useEffect } from 'react' */
-/* import { useParams } from 'react-router-dom' */
-// import { useUsers, useAuth } from '@/sections/shared/hooks'
-/* import { useUsers } from '@/sections/shared/hooks' */
 import { Layout } from '@/components/Layout'
-/* import { UserForm, UsersList } from '.' */
-/* import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert' */
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { User } from '@/modules/users/domain/User'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-
-/* import { Skeleton } from '@/components/ui/skeleton' */
-/* import { AlertCircle } from 'lucide-react' */
-
-
-
 import * as Forms from '@radix-ui/react-form';
-import { Calendar, Space } from 'lucide-react'
 import { useState } from 'react'
-import { gql, useLazyQuery, useQuery } from '@apollo/client'
+import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as Tooltip from '@radix-ui/react-tooltip';
 
 interface FlightReservationData {
   cedula: string;
@@ -42,7 +12,7 @@ interface FlightReservationData {
   destino: string;
   vuelo: string;
   fecha: string;
-  clase: 'premium' | 'business' | 'basic';
+  clase: 'premium' | 'económica' | 'básica';
 }
 
 const OBTENER_RESERVAS = gql`
@@ -57,6 +27,36 @@ const OBTENER_RESERVAS = gql`
     }
   }
 `;
+
+const GUARDAR_RESERVA_MUTATION = gql`
+  mutation GuardarReserva(
+    $codigoVuelo: String!
+    $fecha: String!
+    $cedula: String!
+    $estadoReserva: String!
+    $clase: String!
+  ) {
+    guardarReserva(
+      codigoVuelo: $codigoVuelo
+      fecha: $fecha
+      cedula: $cedula
+      estadoReserva: $estadoReserva
+      clase: $clase
+    ) {
+      cedula
+      clase
+      codigoVuelo
+      estadoReserva
+      fecha
+      id
+    }
+  }
+`;
+
+interface Ciudad {
+  id: number;
+  nombre: string;
+}
 
 export function BookingPage() {
 
@@ -88,16 +88,6 @@ const handleFetchReservas = (e: React.FormEvent) => {
   getReservas(); // Llama a la consulta cuando se hace clic en el botón
 };
 
-/*   useEffect(( )=>{
-    fetch('http://localhost:4000/graphql', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ mutation:
-        guardarReserva(codigoVuelo: "FL449", fecha: "2025-12-26", cedula: "0105630388", estadoReserva: "ACT", clase:"ECONÓMICA" ) 
-      })
-    })
-  }) */
-
 /*   const { loading, error, data } = useQuery(OBTENER_RESERVAS);
 if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -112,13 +102,44 @@ console.log(data)
     destino: '',
     vuelo: '',
     fecha: '',
-    clase: 'basic'
+    clase: 'básica'
   });
-  const [cedula, setCedula] = useState<string>('');
+  const [guardarReserva, { data }] = useMutation(GUARDAR_RESERVA_MUTATION);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [cedula, setCedula] = useState<string>('');
+  const ciudades: string[] = [
+     'Quito' ,
+     'Guayaquil' ,
+     'Cuenca' ,
+     'Ambato' ,
+     'Manta' ,
+     'Loja' ,
+     'Santo Domingo' ,
+     'Machala' ,
+     'Riobamba' ,
+     'Tulcán' ,
+  ];
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form data:', formData);
+
+    e.preventDefault();
+
+    try {
+      const result = await guardarReserva({
+        variables: {
+          codigoVuelo: 'FLYP11',
+          fecha: formData.fecha,
+          cedula: formData.cedula,
+          estadoReserva: 'ACT',
+          clase: formData.clase.toUpperCase(),
+        },
+      });
+
+      console.log('Reserva guardada', result.data);
+    } catch (err) {
+      console.error('Error al guardar la reserva:', err);
+    }
   };
   
  /*  const validateClient = (e: React.FormEvent) => {
@@ -133,9 +154,11 @@ console.log(data)
   }; */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value,
+    console.log(`Campo: ${name}, Valor: ${value}`); // Para debugging
+
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
     }));
   };
   const handleEdit = (obj: FlightReservationData) => {
@@ -352,27 +375,37 @@ console.log(data)
           {/* Origen */}
           <Forms.Field name="origen" className="flex flex-col">
             <Forms.Label className="text-m font-medium mb-1">Origen</Forms.Label>
-            <Forms.Control asChild>
-              <input 
-                type="text"
-                className="border rounded-md p-3"
-                value="bucar"
-                readOnly
-              />
-            </Forms.Control>
+              <select
+                name="origen"
+                value={formData.origen}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md"
+              >
+                <option value=""> -- Elige una ciudad -- </option>
+                {ciudades.map((ciudad, index) => (
+                  <option key={index} value={ciudad}>
+                    {ciudad}
+                  </option>
+                ))}
+              </select>
           </Forms.Field>
 
           {/* Destino */}
           <Forms.Field name="destino" className="flex flex-col">
             <Forms.Label className="text-sm font-medium mb-1">Destino</Forms.Label>
-            <Forms.Control asChild>
-              <input 
-                type="text"
-                className="border rounded-md p-2 bg-gray-100"
-                value="Código vuelo"
-                readOnly
-              />
-            </Forms.Control>
+            <select
+                name="destino"
+                value={formData.destino}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md"
+              >
+                <option value=""> -- Elige una ciudad -- </option>
+                {ciudades.map((ciudad, index) => (
+                  <option key={index} value={ciudad}>
+                    {ciudad}
+                  </option>
+                ))}
+            </select>
           </Forms.Field>
 
           {/* Vuelo */}
@@ -391,16 +424,13 @@ console.log(data)
           {/* Fecha */}
           <Forms.Field name="fecha" className="flex flex-col">
             <Forms.Label className="text-sm font-medium mb-1">Fecha</Forms.Label>
-            <div className="relative">
-              <Forms.Control asChild>
-                <input
-                  type="date"
-                  className="border rounded-md p-2 w-full"
-                  defaultValue="2024-10-14"
-                />
-              </Forms.Control>
-              <Calendar className="absolute right-2 top-2.5 h-5 w-5 text-gray-400" />
-            </div>
+            <input
+              name="fecha"
+              type="date"
+              value={formData.fecha}
+              onChange={handleChange}
+              className="p-2 border rounded-md"
+            />
           </Forms.Field>
         </div>
 
@@ -423,10 +453,10 @@ console.log(data)
               <input
                 type="radio"
                 name="clase"
-                value="business"
+                value="económica"
                 className="mr-2"
-                checked={formData.clase === 'business'}
-                onChange={(e) => setFormData({...formData, clase: 'business' as const})}
+                checked={formData.clase === 'económica'}
+                onChange={(e) => setFormData({...formData, clase: 'económica' as const})}
               />
               Business
             </label>
@@ -434,10 +464,10 @@ console.log(data)
               <input
                 type="radio"
                 name="clase"
-                value="basic"
+                value="básica"
                 className="mr-2"
-                checked={formData.clase === 'basic'}
-                onChange={(e) => setFormData({...formData, clase: 'basic' as const})}
+                checked={formData.clase === 'básica'}
+                onChange={(e) => setFormData({...formData, clase: 'básica' as const})}
               />
               Basic
             </label>
