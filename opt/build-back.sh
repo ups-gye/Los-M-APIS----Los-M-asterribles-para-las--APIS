@@ -21,10 +21,10 @@ gradle build --stacktrace
 docker build -t backend-login .
 
 #==========================================================
-#Build & upload login image
-cd /opt/application/Los-M-APIS----Los-M-asterribles-para-las--APIS/Vuelos
+#Build & upload clientRest image
+cd /opt/application/Los-M-APIS----Los-M-asterribles-para-las--APIS/clientRest
 #Build image
-docker build -t backend-vuelo .
+docker build -t backend-cliente .
 
 
 #==========================================================
