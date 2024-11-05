@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y maven
 COPY src ./src
 
 # Package the Spring Boot application
-RUN mvn package -DskipTests
+RUN mvn package -DskipTests -X
 
 # Use an OpenJDK runtime image to run the app
 FROM openjdk:21-jdk
