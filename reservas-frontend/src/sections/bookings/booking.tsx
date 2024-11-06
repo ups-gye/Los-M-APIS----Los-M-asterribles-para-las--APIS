@@ -5,7 +5,6 @@ import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import { faEdit, faTrash, faFloppyDisk, faBan, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Swal from 'sweetalert2';
-import { formatDate } from 'date-fns';
 
 interface FlightReservationData {
   cedula: string;
@@ -14,6 +13,7 @@ interface FlightReservationData {
   origen: string;
   destino: string;
   vuelo: string;
+  asientos: number | string;
   fecha: string;
   clase: 'PREMIUM' | 'ECONÓMICA' | 'BÁSICA';
   id?: string;
@@ -93,45 +93,38 @@ export const GET_CLIENTE_BY_CEDULA = gql`
   }
 `;
 
+const GET_VUELO = gql`
+  query GetVuelo($origen: String!, $destino: String!) {
+    getVuelo(origen: $origen, destino: $destino) {
+      codigo
+      origen
+      destino
+      numeroAsientosTotales
+    }
+  }
+`;
+
 export function BookingPage() {
 
   const [reservas, setReservas] = useState<any[]>([]);
 
-/*   const { data: reservasData, refetch } = useQuery(OBTENER_RESERVAS);
-  setReservas(reservasData)
-  console.log(reservasData) */
-/*   const { loading, error, data } = useQuery(OBTENER_RESERVAS);
-  if (loading) return <p>Cargando...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-console.log("esta es la info", data?.obtenerReservas) */
 const [showForm, setShowForm] = useState<boolean>(false);
 const [isUpdate, setIsUpdate] = useState<boolean>(false);
-/* const [getReservas, { loading, error, refetch} ] = useLazyQuery(OBTENER_RESERVAS, {
-  onCompleted: (data) => {
-    if (loading) return <p>Cargando...</p>;
-    if (error) return <p>Error: {error.message}</p>;
+const [validClient, setValidClient] = useState<boolean>(false);
 
-    const reservasConFechas = data.obtenerReservas.map((reserva: FlightReservationData) => ({
-      ...reserva,
-      fecha: new Date(parseInt(reserva.fecha, 10)).toISOString().split('T')[0],  // Convertir a fecha legible
-    }));
-
-    console.log(reservasConFechas)
-    setReservas(reservasConFechas);
-    console.log("estas son las reservas", reservas)
-  },
-}); */
 const alert = (icon:number, title:string, message:string)=>{
   let type: 'success' | 'error' | 'warning' | 'info' | 'question' = icon === 1 ? 'success' : 'error';
   Swal.fire({
     icon: type,
     title: title,
-    text: message,
+    html: message,
     confirmButtonText: 'Aceptar'
   });
 }
 
 const [getCliente, { data: clienteData, loading: clienteLoading, error: clienteError }] = useLazyQuery(GET_CLIENTE_BY_CEDULA);
+
+const [getVuelo, { data: vueloData/* , loading: vueloLoading, error: vueloError */ }] = useLazyQuery(GET_VUELO);
 
 if (clienteLoading) {
   const message ="Cargando información"
@@ -159,15 +152,11 @@ const { loading, error, data } = useQuery(OBTENER_RESERVAS, {
 
 const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
   e.preventDefault();
-/*   setFormData(prevData => ({
-    ...prevData,
-    nombre: 'Luis',
-    cedula: cedula,
-  })); */
-  if ( cedula) {
+  if ( cedula && validClient) {
     getCliente({ variables: { cedula } });
   }
-
+  setValidClient(false)
+  
 };
 
   const [formData, setFormData] = useState<FlightReservationData>({
@@ -177,6 +166,7 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
     origen: '',
     destino: '',
     vuelo: '',
+    asientos: '',
     fecha: '',
     clase: 'BÁSICA',
     id: '',
@@ -212,6 +202,7 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
       origen: '',
       destino: '',
       vuelo: '',
+      asientos: '',
       fecha: '',
       clase: 'BÁSICA',
       genero:''
@@ -227,7 +218,7 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
          result = await modificarReserva({
           variables: {
             id: formData.id,
-            codigoVuelo: "FL559",
+            codigoVuelo: formData.vuelo,
             fecha: formData.fecha,
             cedula: formData.cedula,
             estadoReserva: "ACT",
@@ -243,11 +234,10 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
       }else{
           result = await guardarReserva({
           variables: {
-            codigoVuelo: 'FLYP11',
+            codigoVuelo: formData.vuelo,
             fecha: formData.fecha,
             cedula: formData.cedula,
             estadoReserva: 'ACT',
-            /* clase: formData.clase.toUpperCase(), */
             clase: formData.clase,
           },
         });
@@ -264,9 +254,6 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
       console.log('Reserva guardada', result.data);
       
       clearForm()
-      
-/*       refetch()
-      getReservas(); */
       setShowForm(false);
 
     } catch (err) {
@@ -279,20 +266,9 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
       console.error('Error al guardar la reserva:', err);
     }
   };
-  
- /*  const validateClient = (e: React.FormEvent) => {
-
-    e.preventDefault();
-    setFormData(prevData => ({
-      ...prevData,
-      nombre: 'Luis',
-      cedula: '0101010',
-    }));
-
-  }; */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    console.log(`Campo: ${name}, Valor: ${value}`); // Para debugging
+    console.log(`Campo: ${name}, Valor: ${value}`); 
 
     setFormData(prevState => ({
       ...prevState,
@@ -300,13 +276,13 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
     }));
   };
   const handleEdit = (obj: FlightReservationData) => {
-    // Lógica para editar la reserva
     setFormData({
       cedula: obj.cedula,
       nombre: '',
       origen: '',
       destino: '',
       vuelo: '',
+      asientos: '',
       fecha: obj.fecha,
       clase: obj.clase,
       id: obj.id,
@@ -326,7 +302,7 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
     await modificarReserva({
       variables: {
         id: obj.id,
-        codigoVuelo: "FL559",
+        codigoVuelo: obj.codigoVuelo,
         fecha: obj.fecha,
         cedula: obj.cedula,
         estadoReserva: "ANU",
@@ -339,20 +315,11 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
   const handleGenerateNewReservation = () => {
     setShowForm(true);
     clearForm()
+    setValidClient(true)
+
   };
-
-  useEffect(() => {
-    /* refetch() */
-  }, []);
-
-  useEffect(() => {
-    if (!showForm || !isUpdate) {
-      /* getReservas() */
-    }
-  }, [showForm, isUpdate]);
   
   useEffect(() => {
-    // Este useEffect se ejecuta cada vez que formData cambia
     if (!!formData.cedula) {
       setCedula(formData.cedula)
     }
@@ -360,15 +327,23 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
   }, [formData]);
 
   useEffect(() => {
+    if ( !!formData.origen && !!formData.destino) {
+      const origen:string=formData.origen
+      const destino:string=formData.destino
+      getVuelo({ variables: { origen ,destino } });
+    }
+  }, [formData]);
+
+  useEffect(() => {
     if (data && data.obtenerReservas) {
       const reservasConFechas = data.obtenerReservas.map((reserva: FlightReservationData) => ({
         ...reserva,
-        fecha: new Date(parseInt(reserva.fecha, 10)).toISOString().split('T')[0],  // Convertir a fecha legible
+        fecha: new Date(parseInt(reserva.fecha, 10)).toISOString().split('T')[0],  
       }));
-      setReservas(reservasConFechas);  // Actualiza el estado con las nuevas reservas
+      setReservas(reservasConFechas);  
     }
   }, [data]);
-  /* clearForm() */
+
   useEffect(() => {
     if ((clienteData && clienteData.getClienteByCedula) != null) {
       const { nombre, apellido, sexo } = clienteData.getClienteByCedula;
@@ -381,6 +356,30 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
       clearForm()
     }
   }, [clienteData]);
+
+  useEffect(() => {
+    if ((vueloData && vueloData.getVuelo.codigo) != null &&  (formData.origen != '' && formData.origen != '' )) {
+      const { codigo, numeroAsientosTotales } = vueloData.getVuelo;
+      setFormData(prevData => ({
+        ...prevData,
+        vuelo: codigo,
+        asientos: numeroAsientosTotales
+      }));
+    console.log(numeroAsientosTotales)
+
+    }else{
+      if (formData.origen != '' && formData.origen != '' ) {
+          const message =`No existen vuelos disponibles de <strong>${formData.origen}</strong> a <strong>${formData.destino}</strong>.`
+          alert(2, 'Error', message)
+      }
+      setFormData(prevData => ({
+          ...prevData,
+        vuelo: '',
+        asientos: '',
+      }));
+    }
+
+  }, [vueloData]);
 
   return (
     <Layout>
@@ -549,7 +548,7 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
                       maxHeight:'40px',
                       marginTop:'30px',
                     }}
-                    title="Eliminar reserva"
+                    title="Buscar Usuario"
                     onClick={(e) => handleFetchReservas(formData.cedula, e)}
                   >
                     <FontAwesomeIcon icon={faSearch} /> <span> {" Buscar Usuario "} </span>
@@ -564,8 +563,6 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
                   value={formData.nombre}
                   onChange={handleChange}
                   readOnly
-                  /* onChange={(e) => setFormData({...formData, nombre: e.target.value})} */
-                  /* onChange={validateClient} */
                 />
               </Forms.Control>
             </Forms.Field>
@@ -627,7 +624,22 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
                 <input 
                   type="text"
                   className="border rounded-md p-3 bg-gray-100"
-                  value="total asientos 136"
+                  value={formData.vuelo}
+                  onChange={handleChange}
+                  readOnly
+                />
+              </Forms.Control>
+            </Forms.Field>
+            
+            {/* Asientos */}
+            <Forms.Field name="asientos" className="flex flex-col">
+              <Forms.Label className="text-sm font-medium mb-1">Asientos</Forms.Label>
+              <Forms.Control asChild>
+                <input 
+                  type="text"
+                  className="border rounded-md p-3 bg-gray-100"
+                  value={formData.asientos}
+                  onChange={handleChange}
                   readOnly
                 />
               </Forms.Control>
