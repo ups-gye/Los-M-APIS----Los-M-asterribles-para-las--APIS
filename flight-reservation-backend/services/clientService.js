@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const getClienteByCedula = async (cedula) => {        
     try{        
-        const url = `http://185.209.230.19:8080/v1/client/getByDni?dni=${cedula}`                
+        const url = `http://192.168.26.13:8080/v1/client/getByDni?dni=${cedula}`                
         const response = await axios.get(url);        
         const { dni, name, lastName, birthDate, gender } = response.data;
         return { 
