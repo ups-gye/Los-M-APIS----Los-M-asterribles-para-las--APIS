@@ -12,8 +12,8 @@ const resolvers = {
         getClienteByCedula: async (_, { cedula }) => {
             return await getClienteByCedula(cedula);
         },
-        getVuelo: async (_, { origen, destino }) => {
-            return await getVuelo({ origen, destino});
+        getVuelo: async (_, { origen, destino }) => {            
+            return await getVuelo(origen, destino);
         },
         obtenerReservas: async (_, args) => {
             return await obtenerReservas(args); // Si args esta vacio, obtendra todas las reservas
