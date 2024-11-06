@@ -33,5 +33,6 @@ server.start().then(() => {
     // Escuchar en el puerto 4000
     app.listen(4000, () => {
         console.log('Servidor corriendo en http://192.168.26.43:4000/graphql');
+        //console.log('Servidor corriendo en http://localhost:4000/graphql');
     });
 });

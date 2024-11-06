@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const connectDB = async () => {
     try {
         await mongoose.connect('mongodb://admin:password@192.168.26.42:27017/flight-reservations?authSource=admin', {
+        //await mongoose.connect('mongodb://admin:password@localhost:27017/flight-reservations?authSource=admin', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });

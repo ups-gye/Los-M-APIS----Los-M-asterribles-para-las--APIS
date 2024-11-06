@@ -1,11 +1,18 @@
 const soap = require('soap');
+var parseString = require('xml2js').parseString;
+var stripNS = require('xml2js').processors.stripPrefix;
+const axios = require('axios');
+const https = require('https');
+const { v4: uuidv4 } = require('uuid');
+const moment = require('moment-timezone');
+const SOAP_SERVICE_URL = 'https://pdim.edg-ec.com/Vuelos/VueloSoap.asmx?wsdl'
 
 const getVuelo = async (origen, destino) => {
     try {
         const url = 'https://pdim.edg-ec.com/Vuelos/VueloSoap.asmx';
         const client = await soap.createClientAsync(url);
         const [result] = await client.ObtenerVueloOrigenDestino({ origen, destino });        
-        const { codigo, origen, destino, NumerpPasajero } = result;
+        const { codigo, origen, destino, NumeroPasajero } = result;
         // TODO: confirmar si la libreria soap devuelve un json o  un xml. Si es xml deben extraer la información que necesiten
         // le dejo un ejemplo de request y response
         // REQUEST
@@ -43,7 +50,7 @@ const getVuelo = async (origen, destino) => {
         //         <ObtenerVueloOrigenDestinoResponse xmlns="http://tempuri.org/"/>
         //     </soap:Body>
         // </soap:Envelope>
-        return { codigo, origen, destino, NumerpPasajero, estado };
+        return { codigo, origen, destino, NumeroPasajero, estado };
     } catch (error) {
         throw new Error('Error al obtener el vuelo: ' + error.message);
     }
