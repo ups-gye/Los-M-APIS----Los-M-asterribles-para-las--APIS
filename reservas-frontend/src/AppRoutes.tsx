@@ -27,7 +27,7 @@ export const AppRoutes = () => {
     <Router>
       <Navbar />
       <Routes>
-        {/* {isAuth ? */} (
+        {isAuth ? (
           <Route path="/*" element={<UserRoutes />} />
         ) : (
           <>
@@ -35,7 +35,7 @@ export const AppRoutes = () => {
             <Route path="/" element={<Home />} />
             <Route path="/*" element={<Navigate to="/login" />} />
           </>
-        ){/* } */}
+        )}
       </Routes>
     </Router>
   )
