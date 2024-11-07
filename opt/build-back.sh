@@ -6,6 +6,7 @@ docker rmi -f $(docker images --filter='dangling=true' -a -q)
 docker rmi -f $(docker images 'backend-login' -a -q)
 docker rmi -f $(docker images 'backend-cliente' -a -q)
 docker rmi -f $(docker images 'backend-reserva' -a -q)
+docker rmi -f $(docker images 'frontend' -a -q)
 
 #==========================================================
 #Clone git repository
@@ -32,6 +33,15 @@ docker build -t backend-cliente .
 cd /opt/application/Los-M-APIS----Los-M-asterribles-para-las--APIS/flight-reservation-backend
 #Build image
 docker build -t backend-reserva .
+
+#Build & upload frontend image
+cd /opt/application/Los-M-APIS----Los-M-asterribles-para-las--APIS/reservas-frontend
+#Build image
+docker build -t frontend .
+
+
+
+frontend
 
 #==========================================================
 #Removing old and temporal images

@@ -105,6 +105,25 @@ services:
     app_network:
       ipv4_address: 192.168.26.43  
 
+
+ #############################
+ #FRONTEND
+ 
+ #############################
+ #front - 192.168.26.80
+ frontend:
+  depends_on:
+   - postgres_login
+  image: "frontend" 
+  container_name: "frontend"
+  build: ./   
+  restart: always
+  ports:
+   - '9090:9090'  
+  networks:
+    app_network:
+      ipv4_address: 192.168.26.80
+
 volumes:
  mongo-data:
   driver: local
