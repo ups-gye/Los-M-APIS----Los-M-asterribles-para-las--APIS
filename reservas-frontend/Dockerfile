@@ -8,6 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instala las dependencias
+RUN npm install -g npm@10.9.0
 RUN npm install
 
 # Copia el resto de los archivos de la aplicación
