@@ -2,7 +2,9 @@ import { Layout } from '@/components/Layout'
 import * as Forms from '@radix-ui/react-form';
 import { useEffect, useState } from 'react'
 import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
-import { faEdit, faTrash, faFloppyDisk, faBan, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { 
+  // faEdit, 
+  faTrash, faFloppyDisk, faBan, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Swal from 'sweetalert2';
 
@@ -275,26 +277,26 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
       [name]: value
     }));
   };
-  const handleEdit = (obj: FlightReservationData) => {
-    setFormData({
-      cedula: obj.cedula,
-      nombre: '',
-      origen: '',
-      destino: '',
-      vuelo: '',
-      asientos: '',
-      fecha: obj.fecha,
-      clase: obj.clase,
-      id: obj.id,
-      genero:''
-    });
+  // const handleEdit = (obj: FlightReservationData) => {
+  //   setFormData({
+  //     cedula: obj.cedula,
+  //     nombre: '',
+  //     origen: '',
+  //     destino: '',
+  //     vuelo: '',
+  //     asientos: '',
+  //     fecha: obj.fecha,
+  //     clase: obj.clase,
+  //     id: obj.id,
+  //     genero:''
+  //   });
 
-    console.log('Editar reserva con ID:', formData);
-    console.log('ID:', obj.id);
-    setShowForm(true);
-    setIsUpdate(true);
+  //   console.log('Editar reserva con ID:', formData);
+  //   console.log('ID:', obj.id);
+  //   setShowForm(true);
+  //   setIsUpdate(true);
 
-  };
+  // };
 
   const handleDelete = async (obj: FlightReservationData) => {
     console.log(obj)
@@ -302,7 +304,7 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
     await modificarReserva({
       variables: {
         id: obj.id,
-        codigoVuelo: obj.codigoVuelo,
+        codigoVuelo: obj.vuelo,
         fecha: obj.fecha,
         cedula: obj.cedula,
         estadoReserva: "ANU",
@@ -669,7 +671,7 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
                   value="PREMIUM"
                   className="mr-2"
                   checked={formData.clase === 'PREMIUM'}
-                  onChange={(e) => setFormData({...formData, clase: 'PREMIUM' as const})}
+                  onChange={() => setFormData({...formData, clase: 'PREMIUM' as const})}
                 />
                 Premium
               </label>
@@ -680,7 +682,7 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
                   value="ECONÓMICA"
                   className="mr-2"
                   checked={formData.clase === 'ECONÓMICA'}
-                  onChange={(e) => setFormData({...formData, clase: 'ECONÓMICA' as const})}
+                  onChange={() => setFormData({...formData, clase: 'ECONÓMICA' as const})}
                 />
                 Business
               </label>
@@ -691,7 +693,7 @@ const handleFetchReservas = (cedula:string, e: React.FormEvent) => {
                   value="BÁSICA"
                   className="mr-2"
                   checked={formData.clase === 'BÁSICA'}
-                  onChange={(e) => setFormData({...formData, clase: 'BÁSICA' as const})}
+                  onChange={() => setFormData({...formData, clase: 'BÁSICA' as const})}
                 />
                 Basic
               </label>

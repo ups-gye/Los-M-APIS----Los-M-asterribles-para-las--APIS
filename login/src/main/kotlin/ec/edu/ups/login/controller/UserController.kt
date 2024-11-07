@@ -14,7 +14,7 @@ class UserController {
     @Autowired
     private lateinit var userService: IUserService
 
-    @PostMapping(value = ["/create"])
+    @PostMapping
     fun save(@RequestBody userDto: UserDto): ResponseEntity<Any> {
         return try {
              ResponseEntity(userService.save(userDto), HttpStatus.OK)
