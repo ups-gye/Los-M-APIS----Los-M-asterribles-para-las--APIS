@@ -10,7 +10,7 @@ echo Move workdir... done!
 
 #Stop services
 #sudo systemctl stop nginx
-docker-compose down
+docker compose down
 echo Stop Services... done!
 
 #Build backend

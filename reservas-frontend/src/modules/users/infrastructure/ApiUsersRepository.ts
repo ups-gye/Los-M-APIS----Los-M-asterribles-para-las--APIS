@@ -18,7 +18,7 @@ export class ApiUserRepository implements UserRepository {
     return response.data;
   }
 
-  async update(userData: User): Promise<void> {
+  async update(userData: Partial<User>): Promise<void> {
     await usersApi.patch(`${BASE_URL}`, userData);
   }
 

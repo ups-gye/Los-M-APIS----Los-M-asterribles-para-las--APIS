@@ -48,7 +48,7 @@ interface Props {
 }
 
 export function ClientForm({ clientSelected, onCloseForm }: Props) {
-  const { handleAddClient, handleUpdateClient, errors } = useClients()
+  const { handleAddClient, handleUpdateClient} = useClients()
 
   const form = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),

@@ -91,7 +91,7 @@ services:
     app_network:
       ipv4_address: 192.168.26.13  
 #############################     
-#Vuelos - 192.168.26.43
+#Reservas - 192.168.26.43
  backend-reserva:
   depends_on:
    - mongo_reservas
