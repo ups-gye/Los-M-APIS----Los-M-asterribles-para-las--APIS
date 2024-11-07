@@ -14,7 +14,7 @@ export class ApiUserRepository implements UserRepository {
   }
 
   async create(userData: Omit<User, 'id'>): Promise<User> {
-    const response = await usersApi.post<User>(`${BASE_URL}/`, userData);
+    const response = await usersApi.post<User>(`${BASE_URL}`, userData);
     return response.data;
   }
 

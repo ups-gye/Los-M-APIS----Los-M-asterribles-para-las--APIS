@@ -80,7 +80,7 @@ export const Login: React.FC = () => {
       <div className="w-full h-full justify-center gap-4 m-5 grid grid-rows-4 lg:grid-rows-1 grid-flow-col">
 
         <div className="w-full h-full flex flex-col justify-center items-center">
-          <Tabs value={selected} onValueChange={(value) => setSelected(value as TabType)} className="w-[400px]">
+          <Tabs value={selected} onValueChange={(value) => setSelected(value as TabType)} className="w-[500px]">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="account">Account</TabsTrigger>
               <TabsTrigger value="register">Register</TabsTrigger>
